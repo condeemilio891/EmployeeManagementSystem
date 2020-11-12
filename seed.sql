@@ -31,20 +31,21 @@ USE EMPLOYEE_DB;
 INSERT INTO  employees(id,title,salary,role_id,manager_id)
 VALUES (1,"Emilio",100,1,1);
 INSERT INTO  employees(id,title,salary,role_id,manager_id)
-VALUES (2,"Emili",101,2,2);
+VALUES (2,"Ron",101,2,2);
 
 
 USE EMPLOYEE_DB;
 INSERT INTO  department(id,namee)
-VALUES (1,"Terran");
+VALUES (1,"theoretical Physics");
 INSERT INTO  department(id,namee)
-VALUES (2,"Zerg");
+VALUES (2,"Bio-Tech");
 INSERT INTO  department(id,namee)
-VALUES (3,"Protoss");
+VALUES (3,"Security");
 
 USE EMPLOYEE_DB; 
 INSERT INTO roles(id,title,salary,department_id)
-VALUES (1,"SCV",100,1);
+VALUES (1,"Research and development",100,1);
+
 
 SELECT * FROM department;
 SELECT * FROM employees;
