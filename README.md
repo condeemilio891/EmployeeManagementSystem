@@ -8,5 +8,5 @@
     View Budget and Salaries
     Look up employee by manager, role or departments
 
+    ![](EmployeeManagementSystemPic.png)
     
-    <img src="EmployeeManagementSystemPic.png" alt="Girl in a jacket" width="500" height="600">
