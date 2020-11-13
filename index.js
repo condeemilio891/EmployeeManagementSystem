@@ -30,16 +30,16 @@ function runSearch(){
              "view all employees",
              "view departments", 
              'view roles',
-             "view employees by manager",
+             "view employees by manager", //need to add
              "add employee",
              "add department",
-             'add role',
+             'add role', //need to add
              "update employee manager",
              "update employee role",
              "Delete employee",
              "Delete department",
              "Delete role",
-             "view budget",
+             "view budget", //need to add
              "exit"
          ]
 
@@ -187,7 +187,7 @@ function viewEmployeesByManager(){
         message:"enter manager id"}
     ).then(function(answer){
         connection.query
-        ("SELECT * FROM employees ORDER BY manager_id ?",
+        ("SELECT * FROM employees WHERE manager_id",
         {
             manager_id:answer.manager
         },
@@ -197,6 +197,23 @@ function viewEmployeesByManager(){
         }
 
     )})
+    inquirer
+        .prompt({
+         name: 'exit',
+         type: 'list', 
+         message:"Would you like to continue?",
+         choices:[
+             "yes",
+             "no"]})
+             .then(function(data){
+                 switch(data.exit){
+                     case "yes":
+                       runSearch()
+                       break 
+                     case "no":
+                         connection.end();  
+                 }
+             })
     
 }
 // add employee funciton 
