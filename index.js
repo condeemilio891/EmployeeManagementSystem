@@ -1,6 +1,5 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
-
 var connection = mysql.createConnection({
     host: "localhost",
 
@@ -16,7 +15,10 @@ var connection = mysql.createConnection({
 });
 
 connection.connect(function (err) {
-    if (err) throw err;
+    if (!err)
+    console.log('D.B. Connection Succeded') 
+    else 
+    console.log('DB connection failed \n Error:'+JSON.stringify(err,undefined,2));
     runSearch()
 });
 
@@ -30,7 +32,7 @@ function runSearch() {
                 "view all employees",
                 "view departments",
                 'view roles',
-                "view employees by manager", //need to add
+                "view employees by manager", 
                 "add employee",
                 "add department",
                 'add role', 
@@ -70,7 +72,7 @@ function runSearch() {
                     break;
                 case "add department":
                     console.log("add department")
-                    departmentRun();
+                    departmentAdd();
                     break
                 case "add role":
                     console.log("add role")
@@ -183,8 +185,9 @@ function roleshow() {
     })
 }
 ///view employees by manager
-
+// add a would you like to continue async
 function viewEmployeesByManager() {
+    // const managers= await db
     inquirer.prompt(
         {
             name: "manager",
@@ -193,7 +196,7 @@ function viewEmployeesByManager() {
         }
     ).then(function (answer) {
         connection.query
-            ("SELECT * FROM employees WHERE manager_id",
+            ("SELECT * FROM employees WHERE ?",
                 {
                     manager_id: answer.manager
                 },
@@ -212,29 +215,24 @@ function employeeAdd() {
     inquirer
         .prompt([
             {
-                name: "addID",
+                name: "addFirstName",
                 type: "input",
-                message: "insert employee id"
+                message: "INSERT FIRST NAME"
             },
             {
-                name: "addT",
+                name: "addLastName",
                 type: "input",
-                message: "insert employee title"
+                message: "INSERT LAST NAME"
             },
             {
-                name: "addS",
+                name: "addRoleID",
                 type: "input",
-                message: "insert employee salary"
+                message: "INSERT EMPLOYEE ROLE ID"
             },
             {
-                name: "addroleid",
+                name: "addManagerID",
                 type: "input",
-                message: "insert employee role id"
-            },
-            {
-                name: "addMID",
-                type: "input",
-                message: "insert manger ID for the employeee"
+                message: "INSERT MANAGER ID"
             }]
 
         )
@@ -242,11 +240,10 @@ function employeeAdd() {
             connection.query(
                 "INSERT INTO employees SET ?",
                 {
-                    id: answer.addID,
-                    title: answer.addT,
-                    salary: answer.addS,
-                    role_id: answer.addroleid,
-                    manager_id: answer.addMID,
+                    first_name: answer.addFirstName,
+                    last_name: answer.addLastName,
+                    emp_role_id: answer.addRoleID,
+                    manager_id: answer.addManagerID,
                 },
                 function (err) {
                     if (err) throw err;
@@ -277,24 +274,19 @@ function employeeAdd() {
 }
 
 //department add 
-function departmentRun() {
+function departmentAdd() {
     inquirer
-        .prompt([{
-            name: "addD",
+        .prompt({
+            name: "addDepartment",
             type: "input",
-            message: "Insert name of department you would like to add"
-        },
-        {
-            name: "addDID",
-            type: "input",
-            message: "insert ID"
-        }])
+            message: "Insert the name of the department you would like to add"
+        }
+        )
         .then(function (answer) {
             connection.query(
                 "INSERT INTO department SET ?",
                 {
-                    namee: answer.addD,
-                    id: answer.addDID
+                    dept_name: answer.addDepartment
 
                 },
                 function (err) {
@@ -327,24 +319,19 @@ function departmentRun() {
 function roleadd() {
     inquirer
         .prompt([{
-            name: "AddRID",
+            name: "addTitle",
             type: "input",
-            message: "add ID"
+            message: "insert role title"
         },
         {
-            name: "addRT",
+            name: "salary",
             type: "input",
-            message: "add title"
+            message: "insert role Salary"
         },
         {
-            name: "addRS",
+            name: "addDepartmentID",
             type: "input",
-            message: "add salary"
-        },
-        {
-            name: "add",
-            type: "input",
-            message: "add department ID"
+            message: "insert Department ID"
         },
 
 
@@ -353,10 +340,9 @@ function roleadd() {
             connection.query(
                 "INSERT INTO roles SET ?",
                 {
-                    id: answer.addRID,
-                    title: answer.addRT,
-                    salary: answer.addRS,
-                    department_id: answer.add,
+                    title: answer.addTitle,
+                    salary: answer.salary,
+                    dept_id: answer.addDepartmentID,
 
                 },
                 function (err) {
