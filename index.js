@@ -43,7 +43,7 @@ function runSearch() {
                 "Delete employee",
                 "Delete department",
                 "Delete role",
-                "view budget", //need to add
+                "view budget", 
                 "exit"
             ]
 
@@ -107,6 +107,9 @@ function runSearch() {
                 case "Delete role":
                     console.log('deleting role');
                     deleteRole();
+                case "view budget":
+                    console.log('Budget Below');
+                    viewBudget();
                 case "exit":
                     connection.end();
                     break;
@@ -787,4 +790,14 @@ function deleteRole() {
             }
         )
     })
+}
+
+//function to view the budget 
+
+const viewBudget=()=>{
+    connection.query("SELECT SUM(salary) FROM roles",function(err,res){
+        if(err) throw err
+        console.table(res)
+    })
+    
 }
