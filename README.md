@@ -6,6 +6,7 @@
     Update-Employee Data,Roles and Department Data
     Delete-Employees, Roles and Departments
     Look up employee by manager, role or departments
+    Able to view the budget
 
   <img src="./Assets/First.png">
 
