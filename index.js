@@ -33,11 +33,13 @@ function runSearch() {
                 "view departments",
                 'view roles',
                 "view employees by manager", 
+                "view employees by role",
                 "add employee",
                 "add department",
                 'add role', 
-                "update employee manager",
-                "update employee role",
+                "update employee",
+                "update department",
+                "update role",
                 "Delete employee",
                 "Delete department",
                 "Delete role",
@@ -66,6 +68,10 @@ function runSearch() {
                     console.log('viewing employees by manager')
                     viewEmployeesByManager();
                     break;
+                case "view employees by role":
+                    console.log('viewing employess by role')
+                    viewEmployeesByRole();
+                    break;
                 case "add employee":
                     console.log("add employee")
                     employeeAdd();
@@ -78,15 +84,18 @@ function runSearch() {
                     console.log("add role")
                     roleadd();
                     break
-                case "update employee manager":
+                case "update employee":
+                    console.log('updating employee')
+                    employeeUpdate();
+                    break
+                case "update department":
                     console.log("update employee manager")
-                    updateEmployeeManager();
+                    updateDepartment();
                     break
-                case "update employee role":
+                case "update role":
                     console.log("update employee roles")
-                    updateEmployeeRole();
+                    updateRole();
                     break
-
                 case "Delete employee":
                     console.log("deleting department");
                     deleteEmployee();
@@ -105,6 +114,7 @@ function runSearch() {
 
         });
 }
+// Below are all the functions as they pertain to each case
 // show all employees, department and roles
 function employeeshow() {
     connection.query("SELECT * FROM employees", function (err, res) {
@@ -184,10 +194,9 @@ function roleshow() {
             })
     })
 }
-///view employees by manager
-// add a would you like to continue async
+///view employees by manager and role
+// by manager
 function viewEmployeesByManager() {
-    // const managers= await db
     inquirer.prompt(
         {
             name: "manager",
@@ -203,6 +212,24 @@ function viewEmployeesByManager() {
                 function (err, res) {
                     if (err) throw err;
                     console.table(res)
+                    inquirer.prompt({
+                        name:'exit',
+                        type:"list",
+                        message:'would you like to continue',
+                        choices:[
+                            "yes",
+                            "no"
+
+                        ]
+                    }).then(function(data){
+                        switch(data.exit){
+                            case 'yes':
+                                runSearch()
+                                break 
+                            case 'no':
+                            connection.end()
+                        }
+                    })
                 }
 
             )
@@ -210,8 +237,55 @@ function viewEmployeesByManager() {
 
 
 }
+// view employee by role 
+function viewEmployeesByRole(){
+    inquirer.prompt({
+        name:'viewrole',
+        type:'input',
+        message:"enter role id"
+    }).then(function (answer){
+        connection.query 
+        ("SELECT * FROM employees WHERE ?",
+        {
+            emp_role_id:answer.viewrole
+        },
+        function (err, res) {
+            if (err) throw err;
+            console.table(res)
+            inquirer.prompt({
+                name:'exit',
+                type:"list",
+                message:'would you like to continue',
+                choices:[
+                    "yes",
+                    "no"
+
+                ]
+            }).then(function(data){
+                switch(data.exit){
+                    case 'yes':
+                        runSearch()
+                        break 
+                    case 'no':
+                    connection.end()
+                }
+            })
+        }
+        
+        
+        )
+    })
+}
+
+
+// Below are the function that allow the user to add Employees roles and departments
 // add employee funciton 
 function employeeAdd() {
+    // Add a query that selects all employees and resolve in table so the user can see the data
+    connection.query('SELECT * FROM employees',function(err,res){
+        if (err) throw(err);
+        console.table(res)
+    })
     inquirer
         .prompt([
             {
@@ -275,6 +349,10 @@ function employeeAdd() {
 
 //department add 
 function departmentAdd() {
+    connection.query('SELECT * FROM department',function(err,res){
+        if (err) throw(err);
+        console.table(res)
+    })
     inquirer
         .prompt({
             name: "addDepartment",
@@ -317,6 +395,10 @@ function departmentAdd() {
 
 //Role add 
 function roleadd() {
+    connection.query('SELECT * FROM roles',function(err,res){
+        if (err) throw(err);
+        console.table(res)
+    })
     inquirer
         .prompt([{
             name: "addTitle",
@@ -370,6 +452,10 @@ function roleadd() {
             )
         })
 }
+
+/// These are the functions to update employees departments and roles
+
+
 // function to update employee 
 function employeeUpdate() {
     connection.query('SELECT * FROM employees', function (err, res) {
@@ -385,30 +471,36 @@ function employeeUpdate() {
                 message: "enter the id of the employee you would like to change"
             },
             {
-                name: "title",
+                name: "firstName",
                 type: "input",
-                message: "enter the new name"
+                message: "INSERT UPDATED FIRST NAME"
             }, {
-                name: "salary"
+                name: "lastName"
                 , type: "input",
-                message: "enter new salary"
+                message: "INSERT UPDATED LAST NAME"
             }, {
                 name: "role_id",
                 type: "input",
-                message: "enter new role id"
+                message: "INSERT UPDATED ROLE ID"
+            },
+            {
+                name:"manager_id",
+                type:"input",
+                message:"INSERT NEW MANAGER ID"
             }
         ]).then(function (answer) {
             connection.query(
                 "UPDATE employees SET ? WHERE ?",
                 [
                     {
-                        title: answer.title,
-                        salary: answer.salary,
-                        role_id: answer.role_id,
+                        first_name: answer.firstName,
+                        last_name: answer.lastName,
+                        emp_role_id: answer.role_id,
+                        manager_id: answer.manager_id
 
                     },
                     {
-                        id: answer.id
+                        emp_id: answer.id
                     },
                 ],
                 function (err, res) {
@@ -437,8 +529,11 @@ function employeeUpdate() {
         })
 }
 
-// function to update employees ==
-function updateEmployeeRole() {
+// function to update Roles 
+
+
+
+function updateRole() {
     connection.query('SELECT * FROM roles', function (err, res) {
         if (err) throw err;
         console.table(res)
@@ -446,15 +541,15 @@ function updateEmployeeRole() {
     console.log("Updating employee roles...\n");
     inquirer.prompt([
         {
-            name: "employee",
+            name: "role_id",
             type: "input",
             message: "enter ID of the role you would like to change"
 
         },
         {
-            name: "newemployee",
+            name: "newRole",
             type: "input",
-            message: "Enter new title"
+            message: "Enter new Role"
 
         },
         {
@@ -472,12 +567,12 @@ function updateEmployeeRole() {
             "UPDATE roles SET ? WHERE ?",
             [
                 {
-                    title: answer.newemployee,
+                    title: answer.newRole,
                     salary: answer.newSalary,
-                    department_id: answer.newDepartmentId
+                    dept_id: answer.newDepartmentId
                 },
                 {
-                    id: answer.employee
+                    role_id: answer.role_id
                 },
 
 
@@ -508,34 +603,34 @@ function updateEmployeeRole() {
     })
 }
 
-function updateEmployeeManager() {
-    connection.query('SELECT * FROM employees', function (err, res) {
+function updateDepartment() {
+    connection.query('SELECT * FROM department', function (err, res) {
         if (err) throw err;
         console.table(res)
     })
-    console.log("updating employee manager...\n")
+    console.log("updating departments...\n")
     inquirer
         .prompt([
             {
-                name: "employeeId",
+                name: "departmentId",
                 type: "input",
-                message: "Enter Employee ID"
+                message: "Enter department ID you wish to update"
 
             },
             {
-                name: "newManager",
+                name: "departmentName",
                 type: "input",
-                message: "Enter new manager ID"
+                message: "Enter updated department name"
             }
         ]).then(function (answer) {
             connection.query(
-                "UPDATE employees SET ? WHERE ?",
+                "UPDATE department SET ? WHERE ?",
                 [
                     {
-                        manager_id: answer.newManager
+                        dept_name: answer.departmentName
                     },
                     {
-                        id: answer.employeeId
+                        dept_id: answer.departmentId
 
                     }
                 ],
@@ -583,7 +678,7 @@ function deleteEmployee() {
     ).then(function (answer) {
         connection.query(
             "DELETE FROM employees WHERE ?",
-            { id: answer.id },
+            { emp_id: answer.id },
             function (err, res) {
                 if (err) throw err;
                 console.log("Employee removed\n");
@@ -625,7 +720,7 @@ function deleteDepartment() {
     ).then(function (answer) {
         connection.query(
             "DELETE FROM department WHERE ?",
-            { id: answer.id },
+            { dept_id: answer.id },
             function (err, res) {
                 if (err) throw err;
                 console.log('department removed..\n');
@@ -667,7 +762,7 @@ function deleteRole() {
     ).then(function (answer) {
         connection.query(
             "DELETE FROM roles WHERE ?",
-            { id: answer.id },
+            { role_id: answer.id },
             function (err, res) {
                 if (err) throw err;
                 console.log("Role removed...\n");
