@@ -1,5 +1,5 @@
 # Content-management-system
-## This system works using basic sql queries I decided not to use express 
+
 
     View-Employees,Roles and departments
     Add-Employees,Roles and departments
